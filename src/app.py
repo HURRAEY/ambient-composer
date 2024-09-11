@@ -3,8 +3,10 @@ from audio_to_midi import audio_to_midi
 from train_model import generate_randomness
 import os
 from mido import MidiFile, MidiTrack, Message
+from flask_cors import CORS  # CORS 설정을 위한 모듈
 
 app = Flask(__name__)
+CORS(app)  # CORS 설정을 통해 외부 요청을 허용
 
 # 업로드 폴더 설정
 UPLOAD_FOLDER = "uploads"
@@ -39,8 +41,11 @@ def upload_file():
         generated_midi = generate_randomness(midi_data, randomness_level)
         output_path = save_generated_midi(generated_midi)
 
-        # 변환된 MIDI 파일 전송
-        return send_file(output_path, as_attachment=True)
+        # 변환된 MIDI 파일이 존재하는지 확인 후 전송
+        if os.path.exists(output_path):
+            return send_file(output_path, as_attachment=True)
+        else:
+            return jsonify({"error": "MIDI 파일을 찾을 수 없습니다."}), 404
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500

@@ -4,9 +4,11 @@
     <input type="file" @change="onFileChange" accept="audio/*" />
     <input type="range" min="0" max="1" step="0.1" v-model="randomnessLevel" />
     <button @click="convertToMIDI">Generate Composition</button>
-    <a v-if="midiFile" :href="midiFile" download="generated.mid"
-      >Download MIDI</a
-    >
+    <div>
+      <a :href="midiFile ? midiFile : '#'" download="generated_output.mid">
+        <button @click="checkDownload">Download MIDI</button>
+      </a>
+    </div>
   </div>
 </template>
 
@@ -43,11 +45,20 @@ export default {
           const blob = await response.blob();
           this.midiFile = URL.createObjectURL(blob);
         } else {
+          this.midiFile = null;
           alert("Failed to generate composition. Please try again.");
         }
       } catch (error) {
+        this.midiFile = null;
         console.error("Error:", error);
         alert("An error occurred while generating the composition.");
+      }
+    },
+    checkDownload() {
+      if (!this.midiFile) {
+        alert(
+          "No MIDI file available for download. Please try generating again."
+        );
       }
     },
   },

@@ -4,7 +4,9 @@
 
 ```
 npm install
-pip3 install --install tensorflow
+pip3 install install tensorflow mido flask numpy librosa flask-cors
+
+
 
 ```
 
